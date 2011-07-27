@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tryton>
+    <data noupdate="1">
+    
+        <record id="available_gateways" model="nereid.url_rule">
+            <field name="rule">/&lt;language&gt;/_available_gateways</field>
+            <field name="endpoint">nereid.payment.gateway.get_available_gateways</field>
+            <field name="sequence" eval="100" />
+            <field name="url_map" ref="nereid.default_url_map" />
+        </record>
+
+    </data>
+</tryton>

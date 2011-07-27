@@ -1,0 +1,221 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+
+        <!-- nereid.payment.gateway -->
+
+            <record model="ir.ui.view" id="payment_gateway_view_form">
+            <field name="model">nereid.payment.gateway</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <form string="Payment Gateway">
+                    <label name="name"/>
+                    <field name="name"/>
+                    <label name="model"/>
+                    <field name="model"/>
+                    <label name="is_allowed_for_guest"/>
+                    <field name="is_allowed_for_guest"/>
+                    <label name="active"/>
+                    <field name="active"/>
+                    <separator name="available_countries" colspan="4"/>
+                    <field name="available_countries" colspan="4"/>
+                    <separator name="websites" colspan="4"/>
+                    <field name="websites" colspan="4"/>
+                </form>
+                ]]>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="payment_gateway_view_tree">
+            <field name="model">nereid.payment.gateway</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <tree string="Payment Gateways">
+                    <field name="name" />
+                    <field name="model" />
+                    <field name="is_allowed_for_guest" />
+                    <field name="active" />
+                </tree>
+                ]]>
+            </field>
+        </record>
+        <record model="ir.action.act_window" id="act_payment_gateway_form">
+            <field name="name">Payment Gateways</field>
+            <field name="res_model">nereid.payment.gateway</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_payment_gateway_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="payment_gateway_view_tree"/>
+            <field name="act_window" ref="act_payment_gateway_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_payment_gateway_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="payment_gateway_view_form"/>
+            <field name="act_window" ref="act_payment_gateway_form"/>
+        </record>
+        <menuitem parent="nereid.menu_nereid_configuration" 
+            action="act_payment_gateway_form"
+            id="menu_nereid_gateway"/> 
+            
+        <!-- nereid.payment.register -->
+
+        <record model="ir.ui.view" id="payment_register_view_form">
+            <field name="model">nereid.payment.register</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <![CDATA[
+            <form string="Payment Register">
+                <label name="reference"/>
+                <field name="reference"/>
+                <label name="transaction_id"/>
+                <field name="transaction_id"/>
+                <label name="user"/>
+                <field name="user"/>
+                <label name="method"/>
+                <field name="method"/>
+                <notebook colspan="4">
+                    <page string="Details" id="details">
+                        <label name="company"/>
+                        <field name="company"/>
+                        <label name="website"/>
+                        <field name="website"/>
+                        <label name="sale"/>
+                        <field name="sale"/>
+                        <label name="amount"/>
+                        <field name="amount"/>
+                        <label name="currency"/>
+                        <field name="currency"/>
+                        <label name="process_status"/>
+                        <field name="process_status"/>
+                        <label name="status"/>
+                        <field name="status"/>
+                    </page>
+                    <page string="Logs" id="logs">
+                        <field name="logs" colspan="4"/>
+                    </page>
+                    <page string="Notes" id="notes">
+                        <field name="notes" colspan="4"/>
+                    </page>
+                </notebook>
+            </form>
+            ]]>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="payment_register_view_tree">
+            <field name="model">nereid.payment.register</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <tree string="Payment Register">
+                    <field name="reference" />
+                    <field name="user" />
+                    <field name="method" />
+                    <field name="amount" />
+                    <field name="status" />
+                </tree>
+                ]]>
+            </field>
+        </record>
+        <record model="ir.action.act_window" id="act_payment_register_form">
+            <field name="name">Payment Register</field>
+            <field name="res_model">nereid.payment.register</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_payment_register_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="payment_register_view_tree"/>
+            <field name="act_window" ref="act_payment_register_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_payment_register_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="payment_register_view_form"/>
+            <field name="act_window" ref="act_payment_register_form"/>
+        </record>
+        <menuitem parent="menu_nereid_gateway" 
+            action="act_payment_register_form"
+            id="menu_nereid_payment_register"/>
+            
+        <record model="ir.ui.view" id="payment_register_log_view_form">
+            <field name="model">nereid.payment.register.log</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <form string="Payment Register Log">
+                    <label name="message"/>
+                    <field name="message"/>
+                </form>
+                ]]>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="payment_register_log_view_tree">
+            <field name="model">nereid.payment.register.log</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <tree string="Payment Register">
+                    <field name="message" />
+                </tree>
+                ]]>
+            </field>
+        </record>
+        
+        <!-- nereid.website -->
+
+        <record id="website_view_form" model="ir.ui.view">
+            <field name="model">nereid.website</field>
+            <field name="inherit" ref="nereid.website_view_form"/>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <data>
+                    <xpath expr="/form/notebook/page[@string=&quot;Countries&quot;]" 
+                     position="after">
+                        <page string="Checkout Config." id="chck">
+                            <separator name="allowed_gateways" colspan="4"/>
+                            <field name="allowed_gateways" colspan="4"/>
+                        </page>
+                    </xpath>
+                    <xpath expr="/form/notebook" position="inside">
+                        <page string="Configuration" id="page_config">
+                        </page>
+                    </xpath>
+                </data>
+                ]]>
+            </field>
+        </record>
+        <record id="inherit_nereid_sale_view_form" model="ir.ui.view">
+            <field name="model">sale.sale</field>
+            <field name="inherit" ref="sale.sale_view_form"/>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <data>
+                    <xpath expr="/form/notebook/page[@string=&quot;Shipments&quot;]" 
+                       position="after">
+                        <page string="E-Commerce Details" id="ecommerce">
+                            <label name="payment_method"/>
+                            <field name="payment_method"/>
+                        </page>
+                    </xpath>
+                </data>
+                ]]>
+            </field>
+        </record>
+        <record id="inherit_nereid_invoice_view_form" model="ir.ui.view">
+            <field name="model">account.invoice</field>
+            <field name="inherit" ref="account_invoice.invoice_view_form"/>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <data>
+                    <xpath expr="/form/notebook/page[@id=&quot;info&quot;]/field[@name=&quot;move&quot;]" 
+                       position="after">
+                        <label name="nereid_payment_register"/>
+                        <field name="nereid_payment_register"/>
+                    </xpath>
+                </data>
+                ]]>
+            </field>
+        </record>
+    </data>
+</tryton>
+

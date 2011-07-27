@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+        This file is part of nereid. The COPYRIGHT file at the
+        top level of this repository contains the full copyright notices
+        and license terms.
+    -->
+<tryton>
+    <data noupdate="1">
+      <record id="payment_gateway_cod" model="nereid.payment.gateway">
+          <field name="name">COD(Cash on Delivery)</field>
+          <field name="active" eval="True"/>
+          <field name="is_allowed_for_guest" eval="True"/>
+          <field name="model" search="[('model', '=', 'nereid.payment.cod')]" />
+      </record>
+      <record id="payment_gateway_cheque" model="nereid.payment.gateway">
+          <field name="name">Cheque</field>
+          <field name="active" eval="True"/>
+          <field name="is_allowed_for_guest" eval="True"/>
+          <field name="model" search="[('model', '=', 'nereid.payment.cheque')]" />
+      </record>
+    </data>
+</tryton>
