@@ -19,6 +19,7 @@ class PaymentGateway(ModelSQL, ModelView):
     _description = __doc__
 
     name = fields.Char('Name', required=True)
+    code = fields.Char('Code')
     active = fields.Boolean('Active')
     is_allowed_for_guest = fields.Boolean('Is Allowed for Guest ?')
     available_countries = fields.Many2Many(
