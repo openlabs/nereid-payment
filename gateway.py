@@ -50,6 +50,17 @@ class PaymentGateway(ModelSQL, ModelView):
 
         return self.browse(self.search(domain))
 
+    def get_image(self, gateway):
+        """Return an image for the given gateway. The API by default looks for
+        the `get_image` method in the model of the given gateway. If there is
+        such a method, the value returned from calling that method with the
+        browse record of the method as argument is taken. 
+        """
+        gateway_model_obj = self.pool.get(gateway.model.model)
+        if hasattr(gateway_model_obj, 'get_image'):
+            return gateway_model_obj.get_image(gateway)
+        return None
+
     def get_available_gateways(self):
         """Return the JSONified list of payment gateways available
 
@@ -74,7 +85,11 @@ class PaymentGateway(ModelSQL, ModelView):
             address = address_obj.browse(value)
             value = address.country.id
 
-        rv = [(g.id, g.name) for g in self._get_available_gateways(value)]
+        rv = [{
+            'id': g.id, 
+            'name': g.name,
+            'image': g.get_image(g),
+                } for g in self._get_available_gateways(value)]
         return jsonify(result = rv)
 
     def process(self, sale, payment_method_id):
@@ -95,7 +110,7 @@ class PaymentGateway(ModelSQL, ModelView):
         allowed_gateways = self._get_available_gateways(
             sale.invoice_address.country.id)
         if payment_method not in allowed_gateways:
-            current_app.logger.debug("Payment method %s is not valid" % \
+            current_app.logger.error("Payment method %s is not valid" % \
                 payment_method.name)
             abort(403)
 
