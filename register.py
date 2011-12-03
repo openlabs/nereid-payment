@@ -32,6 +32,9 @@ class Register(ModelSQL, ModelView):
     website = fields.Many2One('nereid.website', 'Website', required=True, 
         readonly=True)
     method = fields.Char('Payment Model', required=True, readonly=True)
+    
+    #: A payment product if known, for example: Mastercard
+    payment_product = fields.Char('Payment Product', readonly=True)
     amount = fields.Numeric('Amount', required=True, readonly=True)
     currency = fields.Many2One('currency.currency', 'Currency', required=True,
         readonly=True)
