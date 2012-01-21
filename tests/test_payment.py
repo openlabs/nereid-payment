@@ -152,10 +152,10 @@ class TestPayment(unittest.TestCase):
         app = self.get_app()
         with app.test_client() as c:
             result = c.get('/en_US/_available_gateways?value=%s' % country_id)
-            result_tuples = json.loads(result.data)['result']
-            self.assertEqual(len(result_tuples), 1)
+            json_result = json.loads(result.data)['result']
+            self.assertEqual(len(json_result), 1)
             self.assertTrue(
-                payment_method_id in [t[0] for t in result_tuples]
+                payment_method_id in [t['id'] for t in json_result]
                 )
 
     def test_0040_address_as_guest(self):
@@ -191,8 +191,8 @@ class TestPayment(unittest.TestCase):
                 data={'email': 'email@example.com', 'password': 'password'})
             result = c.get(
                 '/en_US/_available_gateways?value=%s&type=address' % regd_user_id)
-            result_tuples = json.loads(result.data)['result']
-            self.assertEqual(len(result_tuples), 1)
+            json_result = json.loads(result.data)['result']
+            self.assertEqual(len(json_result), 1)
 
 
 def suite():
