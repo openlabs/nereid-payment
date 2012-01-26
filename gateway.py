@@ -29,6 +29,11 @@ class PaymentGateway(ModelSQL, ModelView):
         domain = [('model', 'ilike', 'nereid.payment.%')])
     websites = fields.Many2Many('nereid.payment.gateway-nereid.website',
         'gateway', 'website', 'Websites')
+    sequence = fields.Integer('Sequence', required=True, select=1)
+    
+    def __init__(self):	
+        super(PaymentGateway, self).__init__()
+        self._order.insert(0, ('sequence', 'ASC'))
 
     def default_active(self):
         "Sets active to True by default"
@@ -37,6 +42,9 @@ class PaymentGateway(ModelSQL, ModelView):
     def default_is_allowed_for_guest(self):
         "Sets is allowed for guest to True by default"
         return True
+        
+    def default_sequence(self):
+        return 100
 
     def _get_available_gateways(self, bill_country_id):
         """Return the list of tuple of available payment methods

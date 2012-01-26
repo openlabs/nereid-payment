@@ -20,6 +20,8 @@ this repository contains the full copyright notices and license terms. -->
                     <field name="is_allowed_for_guest"/>
                     <label name="active"/>
                     <field name="active"/>
+                    <label name="sequence"/>
+                    <field name="sequence"/>
                     <separator name="available_countries" colspan="4"/>
                     <field name="available_countries" colspan="4"/>
                     <separator name="websites" colspan="4"/>
@@ -37,6 +39,7 @@ this repository contains the full copyright notices and license terms. -->
                     <field name="name" />
                     <field name="model" />
                     <field name="is_allowed_for_guest" />
+                    <field name="sequence"/>
                     <field name="active" />
                 </tree>
                 ]]>
