@@ -6,7 +6,7 @@ this repository contains the full copyright notices and license terms. -->
 
         <!-- nereid.payment.gateway -->
 
-            <record model="ir.ui.view" id="payment_gateway_view_form">
+        <record model="ir.ui.view" id="payment_gateway_view_form">
             <field name="model">nereid.payment.gateway</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
@@ -14,6 +14,8 @@ this repository contains the full copyright notices and license terms. -->
                 <form string="Payment Gateway">
                     <label name="name"/>
                     <field name="name"/>
+                    <label name="code"/>
+                    <field name="code"/>
                     <label name="model"/>
                     <field name="model"/>
                     <label name="is_allowed_for_guest"/>
@@ -37,6 +39,7 @@ this repository contains the full copyright notices and license terms. -->
                 <![CDATA[
                 <tree string="Payment Gateways">
                     <field name="name" />
+                    <field name="code" />
                     <field name="model" />
                     <field name="is_allowed_for_guest" />
                     <field name="sequence"/>
