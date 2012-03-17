@@ -5,7 +5,7 @@
     COD(Cash on delivery) and Payment by Check/Money Order are 
         default payment methods/gateways
 
-    :copyright: (c) 2010-2011 by Openlabs Technologies & Consulting (P) Ltd.
+    :copyright: (c) 2010-2012 by Openlabs Technologies & Consulting (P) Ltd.
     :license: BSD, see LICENSE for more details.
 """
 from trytond.model import ModelSQL
@@ -28,7 +28,7 @@ class COD(ModelSQL):
         order_obj.write(sale.id, {
             'invoice_method': self.invoice_method,
             'shipment_method': self.shipment_method,
-            })
+        })
         return True
 
 COD()
@@ -50,7 +50,7 @@ class Cheque(ModelSQL):
         order_obj.write(sale.id, {
             'invoice_method': self.invoice_method,
             'shipment_method': self.shipment_method,
-            })
+        })
         return True
 
 Cheque()

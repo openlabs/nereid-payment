@@ -4,7 +4,7 @@
 
     "Nereid Payment Gateway"
 
-    :copyright: © 2011 by Openlabs Technologies & Consulting (P) Limited
+    :copyright: © 2011-2012 by Openlabs Technologies & Consulting (P) Limited
     :license: BSD, see LICENSE for more details.
 """
 from nereid import abort
@@ -30,8 +30,8 @@ class PaymentGateway(ModelSQL, ModelView):
     websites = fields.Many2Many('nereid.payment.gateway-nereid.website',
         'gateway', 'website', 'Websites')
     sequence = fields.Integer('Sequence', required=True, select=1)
-    
-    def __init__(self):	
+
+    def __init__(self):
         super(PaymentGateway, self).__init__()
         self._order.insert(0, ('sequence', 'ASC'))
 
@@ -42,7 +42,7 @@ class PaymentGateway(ModelSQL, ModelView):
     def default_is_allowed_for_guest(self):
         "Sets is allowed for guest to True by default"
         return True
-        
+
     def default_sequence(self):
         return 100
 
@@ -52,7 +52,7 @@ class PaymentGateway(ModelSQL, ModelView):
         domain = [
             ('available_countries', '=', bill_country_id),
             ('websites', '=', request.nereid_website.id),
-            ]
+        ]
         if request.is_guest_user:
             domain.append(('is_allowed_for_guest', '=', True))
 
@@ -94,7 +94,7 @@ class PaymentGateway(ModelSQL, ModelView):
             value = address.country.id
 
         rv = [{
-            'id': g.id, 
+            'id': g.id,
             'name': g.name,
             'image': g.get_image(g),
                 } for g in self._get_available_gateways(value)]
@@ -112,7 +112,8 @@ class PaymentGateway(ModelSQL, ModelView):
         sale_obj = self.pool.get('sale.sale')
 
         try_to_authorize = (
-            request.nereid_website.payment_mode == 'auth_if_available')
+            request.nereid_website.payment_mode == 'auth_if_available'
+        )
 
         payment_method = self.browse(payment_method_id)
         allowed_gateways = self._get_available_gateways(
@@ -137,7 +138,7 @@ class DefaultCheckout(ModelSQL):
     "Default Checkout Functionality process payment addition"
 
     _name = 'nereid.checkout.default'
-    
+
     def __init__(self):
         super(DefaultCheckout, self).__init__()
 
@@ -172,11 +173,13 @@ class WebSite(ModelSQL, ModelView):
 
     allowed_gateways = fields.Many2Many(
         'nereid.payment.gateway-nereid.website', 'website', 'gateway',
-        'Allowed Payment Gateways')
+        'Allowed Payment Gateways'
+    )
     payment_mode = fields.Selection([
         ('auth_if_available', 'Authorize if available'),
         ('capture', 'Capture'),
-        ], 'Payment Capture mode', required=True)
+        ], 'Payment Capture mode', required=True
+    )
 
     def default_payment_mode(self):
         "Set payment mode to capture by default"
@@ -190,10 +193,12 @@ class PaymentGatewayWebsite(ModelSQL):
     _name = 'nereid.payment.gateway-nereid.website'
     _description = __doc__
 
-    website = fields.Many2One('nereid.website', 'Website', required=True,
-        select=1)
-    gateway = fields.Many2One('nereid.payment.gateway', 'Gateway',
-        required=True, select=1)
+    website = fields.Many2One(
+        'nereid.website', 'Website', required=True, select=1
+    )
+    gateway = fields.Many2One(
+        'nereid.payment.gateway', 'Gateway', required=True, select=1
+    )
 
 PaymentGatewayWebsite()
 
@@ -202,7 +207,8 @@ class PaymentGatewaySale(ModelWorkflow, ModelSQL, ModelView):
     "Extending Sale to include payment method"
     _name = "sale.sale"
 
-    payment_method = fields.Many2One('nereid.payment.gateway', 
-        'Payment Method')
+    payment_method = fields.Many2One(
+        'nereid.payment.gateway', 'Payment Method'
+    )
 
 PaymentGatewaySale()
