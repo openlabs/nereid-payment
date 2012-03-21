@@ -125,7 +125,8 @@ class PaymentGateway(ModelSQL, ModelView):
 
         payment_method_obj = self.pool.get(payment_method.model.model)
         sale_obj.write(sale.id, {'payment_method': payment_method.id})
-
+        sale = sale_obj.browse(sale.id)
+ 
         if try_to_authorize and hasattr(payment_method_obj, 'authorize'):
             return payment_method_obj.authorize(sale)
         else:
