@@ -183,7 +183,7 @@ this repository contains the full copyright notices and license terms. -->
                         </page>
                     </xpath>
                     <xpath expr="/form/notebook" position="inside">
-                        <page string="Configuration" id="page_config">
+                        <page string="Payment Settings" id="payment_settings">
                         </page>
                     </xpath>
                 </data>
