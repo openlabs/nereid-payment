@@ -6,7 +6,7 @@
     details.
 
     :copyright: © 2011-2012 by Openlabs Technologies & Consulting (P) Limited
-    :license: BSD, see LICENSE for more details.
+    :license: GPLv3, see LICENSE for more details.
 """
 from trytond.model import ModelWorkflow, ModelSQL, ModelView, fields
 from trytond.pyson import Equal, Eval, Not

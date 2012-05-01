@@ -4,8 +4,8 @@
 
     "Nereid Payment Gateway"
 
-    :copyright: © 2011-2012 by Openlabs Technologies & Consulting (P) Limited
-    :license: BSD, see LICENSE for more details.
+    :copyright: (c) 2011-2012 by Openlabs Technologies & Consulting (P) Limited
+    :license: GPLv3, see LICENSE for more details.
 """
 from nereid import abort
 from nereid.helpers import jsonify

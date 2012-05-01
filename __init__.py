@@ -1,7 +1,12 @@
-# -*- coding: UTF-8 -*-
-# This file is part of Tryton.  The COPYRIGHT file at the top level of
-# this repository contains the full copyright notices and license terms.
-"Nereid Payment Gateway"
+# -*- coding: utf-8 -*-
+'''
+    
+    Nereid Payment Gateway
+    
+    :copyright: (c) 2010-2012 by Openlabs Technologies & Consulting (P) Ltd.
+    :license: GPLv3, see LICENSE for more details
+    
+'''
 
 from .gateway import *
 from .defaults import *
