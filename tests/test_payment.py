@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 '''
-    
+
     Nereid Payment Gateway Test Suite
-    
+
     :copyright: (c) 2010-2012 by Openlabs Technologies & Consulting (P) Ltd.
     :license: GPLv3, see LICENSE for more details
-    
 '''
 import json
-from ast import literal_eval
 from decimal import Decimal
 import unittest2 as unittest
 
@@ -52,20 +50,23 @@ class TestPayment(unittest.TestCase):
                 'product-list.jinja', ' ')
             cls.available_countries = country_obj.search([], limit=5)
             cls.available_currencies = currency_obj.search([('code', '=', 'USD')])
-            cls.site = testing_proxy.create_site('testsite.com', 
+            cls.site = testing_proxy.create_site(
+                'localhost',
                 category_template = category_template,
                 product_template = product_template,
                 countries = [('set', cls.available_countries)],
-                currencies = [('set', cls.available_currencies)])
+                currencies = [('set', cls.available_currencies)],
+                guest_user = cls.guest_user,
+            )
 
             testing_proxy.create_template('home.jinja', ' Home ', cls.site)
-            testing_proxy.create_template('checkout.jinja', 
+            testing_proxy.create_template('checkout.jinja',
                 '{{form.errors}}', cls.site)
             testing_proxy.create_template(
-                'login.jinja', 
+                'login.jinja',
                 '{{ login_form.errors }} {{get_flashed_messages()}}', cls.site)
-            testing_proxy.create_template('shopping-cart.jinja', 
-                'Cart:{{ cart.id }},{{get_cart_size()|round|int}},{{cart.sale.total_amount}}', 
+            testing_proxy.create_template('shopping-cart.jinja',
+                'Cart:{{ cart.id }},{{get_cart_size()|round|int}},{{cart.sale.total_amount}}',
                 cls.site)
 
             category = testing_proxy.create_product_category(
@@ -90,9 +91,8 @@ class TestPayment(unittest.TestCase):
 
     def get_app(self, **options):
         options.update({
-            'SITE': 'testsite.com',
-            'GUEST_USER': self.guest_user,
-            })
+            'SITE': 'localhost',
+        })
         return testing_proxy.make_app(**options)
 
     def setUp(self):
@@ -101,6 +101,7 @@ class TestPayment(unittest.TestCase):
         self.address_obj = testing_proxy.pool.get('party.address')
         self.website_obj = testing_proxy.pool.get('nereid.website')
         self.payment_obj = testing_proxy.pool.get('nereid.payment.gateway')
+        self.nereid_user_obj = testing_proxy.pool.get('nereid.user')
 
     def test_0010_check_cart(self):
         """Assert nothing broke the cart."""
@@ -129,7 +130,7 @@ class TestPayment(unittest.TestCase):
             self.assertEqual(json.loads(rv.data), {u'result': []})
 
     def test_0030_find_after_adding_country(self):
-        with Transaction().start(testing_proxy.db_name, 
+        with Transaction().start(testing_proxy.db_name,
                 testing_proxy.user, testing_proxy.context) as txn:
 
             website_id, = self.website_obj.search([])
@@ -149,9 +150,9 @@ class TestPayment(unittest.TestCase):
                 payment_method_id in json.loads(result.data)['result']
                 )
 
-        with Transaction().start(testing_proxy.db_name, 
+        with Transaction().start(testing_proxy.db_name,
                 testing_proxy.user, testing_proxy.context) as txn:
-            self. website_obj.write(website_id, 
+            self. website_obj.write(website_id,
                 {'allowed_gateways': [('add', [payment_method_id])]})
             txn.cursor.commit()
 
@@ -166,7 +167,7 @@ class TestPayment(unittest.TestCase):
 
     def test_0040_address_as_guest(self):
         "When address lookup is invoked as guest it should fail"
-        with Transaction().start(testing_proxy.db_name, 
+        with Transaction().start(testing_proxy.db_name,
                 testing_proxy.user, testing_proxy.context) as txn:
             website_id, = self.website_obj.search([])
             website = self.website_obj.browse(website_id)
@@ -181,22 +182,28 @@ class TestPayment(unittest.TestCase):
 
     def test_0050_address_as_loggedin(self):
         "When address lookup is invoked as logged in user must succeed"
-        with Transaction().start(testing_proxy.db_name, 
+        with Transaction().start(testing_proxy.db_name,
                 testing_proxy.user, testing_proxy.context) as txn:
             website_id, = self.website_obj.search([])
             website = self.website_obj.browse(website_id)
             country_id = website.countries[0].id
-            regd_user_id = testing_proxy.create_user_party('Registered User', 
-                'email@example.com', 'password', company=self.company)
-            self.address_obj.write(regd_user_id, {'country': country_id})
+            regd_user_id = testing_proxy.create_user_party(
+                'Registered User',
+                'email@example.com', 'password',
+                company=self.company
+            )
+            regd_user = self.nereid_user_obj.browse(regd_user_id)
+            address_id = regd_user.addresses[0].id
+            self.address_obj.write(address_id, {'country': country_id})
             txn.cursor.commit()
 
         app = self.get_app()
         with app.test_client() as c:
-            rv = c.post('/en_US/login', 
+            rv = c.post('/en_US/login',
                 data={'email': 'email@example.com', 'password': 'password'})
             result = c.get(
-                '/en_US/_available_gateways?value=%s&type=address' % regd_user_id)
+                '/en_US/_available_gateways?value=%s&type=address' % address_id
+            )
             json_result = json.loads(result.data)['result']
             self.assertEqual(len(json_result), 1)
 
