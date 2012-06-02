@@ -6,7 +6,7 @@
     'name': 'Nereid - Payment Gateway',
     'description': '''API to facilitate multiple payment gateways to integrate
         with nereid''',
-    'version': '2.0.0.3',
+    'version': '2.0.0.4',
     'author': 'Openlabs Technologies & Consulting (P) LTD',
     'email': 'info@openlabs.co.in',
     'website': 'http://www.openlabs.co.in/',
