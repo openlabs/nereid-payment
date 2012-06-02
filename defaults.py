@@ -9,6 +9,7 @@
     :license: GPLv3, see LICENSE for more details.
 """
 from trytond.model import ModelSQL
+from trytond.pool import Pool
 
 
 class COD(ModelSQL):
@@ -24,7 +25,7 @@ class COD(ModelSQL):
         In COD payment is done by cash on delivery
         Hence setting invoice method in sale to postpaid
         """
-        order_obj = self.pool.get('sale.sale')
+        order_obj = Pool().get('sale.sale')
         order_obj.write(sale.id, {
             'invoice_method': self.invoice_method,
             'shipment_method': self.shipment_method,
@@ -46,7 +47,7 @@ class Cheque(ModelSQL):
         """
         Invoice method in sale to prepaid
         """
-        order_obj = self.pool.get('sale.sale')
+        order_obj = Pool().get('sale.sale')
         order_obj.write(sale.id, {
             'invoice_method': self.invoice_method,
             'shipment_method': self.shipment_method,

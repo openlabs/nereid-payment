@@ -10,7 +10,8 @@
 from nereid import abort
 from nereid.helpers import jsonify
 from nereid.globals import request, current_app
-from trytond.model import ModelView, ModelSQL, ModelWorkflow, fields
+from trytond.model import ModelView, ModelSQL, Workflow, fields
+from trytond.pool import Pool
 
 
 class PaymentGateway(ModelSQL, ModelView):
@@ -29,7 +30,7 @@ class PaymentGateway(ModelSQL, ModelView):
         domain = [('model', 'ilike', 'nereid.payment.%')])
     websites = fields.Many2Many('nereid.payment.gateway-nereid.website',
         'gateway', 'website', 'Websites')
-    sequence = fields.Integer('Sequence', required=True, select=1)
+    sequence = fields.Integer('Sequence', required=True, select=True)
 
     def __init__(self):
         super(PaymentGateway, self).__init__()
@@ -64,7 +65,7 @@ class PaymentGateway(ModelSQL, ModelView):
         such a method, the value returned from calling that method with the
         browse record of the method as argument is taken. 
         """
-        gateway_model_obj = self.pool.get(gateway.model.model)
+        gateway_model_obj = Pool().get(gateway.model.model)
         if hasattr(gateway_model_obj, 'get_image'):
             return gateway_model_obj.get_image(gateway)
         return None
@@ -76,7 +77,7 @@ class PaymentGateway(ModelSQL, ModelView):
 
         If type is specified as address then an address lookup is done
         """
-        address_obj = self.pool.get('party.address')
+        address_obj = Pool().get('party.address')
 
         value = int(request.args.get('value', 0))
         if request.values.get('type') == 'address':
@@ -109,7 +110,7 @@ class PaymentGateway(ModelSQL, ModelView):
         :param sale: Browse Record of the Sale
         :param payment_method_id: ID of payment method
         """
-        sale_obj = self.pool.get('sale.sale')
+        sale_obj = Pool().get('sale.sale')
 
         try_to_authorize = (
             request.nereid_website.payment_mode == 'auth_if_available'
@@ -123,7 +124,7 @@ class PaymentGateway(ModelSQL, ModelView):
                 payment_method.name)
             abort(403)
 
-        payment_method_obj = self.pool.get(payment_method.model.model)
+        payment_method_obj = Pool().get(payment_method.model.model)
         sale_obj.write(sale.id, {'payment_method': payment_method.id})
         sale = sale_obj.browse(sale.id)
  
@@ -149,7 +150,7 @@ class DefaultCheckout(ModelSQL):
         :param sale: Browse Record of Sale Order
         :param form: Instance of validated form
         """
-        payment_gateway_obj = self.pool.get("nereid.payment.gateway")
+        payment_gateway_obj = Pool().get("nereid.payment.gateway")
         return payment_gateway_obj.process(sale, form.payment_method.data)
 
 DefaultCheckout()
@@ -161,9 +162,9 @@ class PaymentGatewayCountry(ModelSQL):
     _description = __doc__
 
     gateway = fields.Many2One('nereid.payment.gateway', 'Gateway' ,
-        ondelete='CASCADE', required=True, select=1)
+        ondelete='CASCADE', required=True, select=True)
     country = fields.Many2One('country.country', 'Country',
-        ondelete='CASCADE', required=True, select=1)
+        ondelete='CASCADE', required=True, select=True)
 
 PaymentGatewayCountry()
 
@@ -195,16 +196,16 @@ class PaymentGatewayWebsite(ModelSQL):
     _description = __doc__
 
     website = fields.Many2One(
-        'nereid.website', 'Website', required=True, select=1
+        'nereid.website', 'Website', required=True, select=True
     )
     gateway = fields.Many2One(
-        'nereid.payment.gateway', 'Gateway', required=True, select=1
+        'nereid.payment.gateway', 'Gateway', required=True, select=True
     )
 
 PaymentGatewayWebsite()
 
 
-class PaymentGatewaySale(ModelWorkflow, ModelSQL, ModelView):
+class PaymentGatewaySale(Workflow, ModelSQL, ModelView):
     "Extending Sale to include payment method"
     _name = "sale.sale"
 
