@@ -17,6 +17,7 @@ register_classes()
 
 from nereid.testing import testing_proxy
 from trytond.transaction import Transaction
+from trytond.pool import Pool
 
 class TestPayment(unittest.TestCase):
     """Test Payment Gateway"""
@@ -26,12 +27,12 @@ class TestPayment(unittest.TestCase):
         # Install module
         testing_proxy.install_module('nereid_payment')
 
-        uom_obj = testing_proxy.pool.get('product.uom')
-        journal_obj = testing_proxy.pool.get('account.journal')
-        country_obj = testing_proxy.pool.get('country.country')
-        currency_obj = testing_proxy.pool.get('currency.currency')
-
         with Transaction().start(testing_proxy.db_name, 1, None) as txn:
+            uom_obj = Pool().get('product.uom')
+            journal_obj = Pool().get('account.journal')
+            country_obj = Pool().get('country.country')
+            currency_obj = Pool().get('currency.currency')
+
             # Create company
             cls.company = testing_proxy.create_company('Test Company')
             testing_proxy.set_company_for_user(1, cls.company)
@@ -74,7 +75,7 @@ class TestPayment(unittest.TestCase):
             stock_journal = journal_obj.search([('code', '=', 'STO')])[0]
             cls.product = testing_proxy.create_product(
                 'product 1', category,
-                type = 'stockable',
+                type = 'goods',
                 # purchasable = True,
                 salable = True,
                 list_price = Decimal('10'),
