@@ -175,8 +175,7 @@ this repository contains the full copyright notices and license terms. -->
             <field name="arch" type="xml">
                 <![CDATA[
                 <data>
-                    <xpath expr="/form/notebook/page[@string=&quot;Countries&quot;]" 
-                     position="after">
+                    <xpath expr="/form/notebook" position="inside">
                         <page string="Checkout Config." id="chck">
                             <separator name="allowed_gateways" colspan="4"/>
                             <field name="allowed_gateways" colspan="4"/>
