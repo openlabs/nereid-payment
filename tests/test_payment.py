@@ -42,16 +42,14 @@ class TestPayment(BaseTestCase):
                 self.assertEqual(rv.status_code, 200)
 
                 c.post('/en_US/cart/add', data={
-                    'product': self.product, 'quantity': 5
+                    'product': self.product.id, 'quantity': 5
                     })
                 rv = c.get('/en_US/cart')
                 self.assertEqual(rv.status_code, 200)
 
-            sales_ids = self.sale_obj.search([])
-            self.assertEqual(len(sales_ids), 1)
-            sale = self.sale_obj.browse(sales_ids[0])
+            sale, = self.sale_obj.search([])
             self.assertEqual(len(sale.lines), 1)
-            self.assertEqual(sale.lines[0].product.id, self.product)
+            self.assertEqual(sale.lines[0].product, self.product)
 
     def test_0020_find_gateways(self):
         """
@@ -73,11 +71,11 @@ class TestPayment(BaseTestCase):
             self.setup_defaults()
             app = self.get_app()
 
-            website_id, = self.nereid_website_obj.search([])
-            website = self.nereid_website_obj.browse(website_id)
-            payment_method_id = self.payment_obj.search([])[0]
-            self.payment_obj.write(payment_method_id, {
-                'available_countries': [('add', [c.id for c in website.countries])]
+            website, = self.nereid_website_obj.search([])
+            payment_method = self.payment_obj.search([])[0]
+            self.payment_obj.write(
+                [payment_method], {
+                'available_countries': [('add', map(int, website.countries))]
             })
             country_id = website.countries[0].id
 
@@ -85,19 +83,20 @@ class TestPayment(BaseTestCase):
                 result = c.get('/en_US/_available_gateways?value=%s' % country_id)
                 # False because its not added to website
                 self.assertFalse(
-                    payment_method_id in json.loads(result.data)['result']
+                    payment_method.id in json.loads(result.data)['result']
                 )
 
 
-            self. nereid_website_obj.write(website_id,
-                {'allowed_gateways': [('add', [payment_method_id])]})
+            self.nereid_website_obj.write(
+                [website],
+                {'allowed_gateways': [('add', [payment_method])]})
 
             with app.test_client() as c:
                 result = c.get('/en_US/_available_gateways?value=%s' % country_id)
                 json_result = json.loads(result.data)['result']
                 self.assertEqual(len(json_result), 1)
                 self.assertTrue(
-                    payment_method_id in [t['id'] for t in json_result]
+                    payment_method.id in [t['id'] for t in json_result]
                 )
 
     def test_0040_address_as_guest(self):
@@ -107,10 +106,6 @@ class TestPayment(BaseTestCase):
         with Transaction().start(DB_NAME, USER, CONTEXT):
             self.setup_defaults()
             app = self.get_app()
-
-            website_id, = self.nereid_website_obj.search([])
-            website = self.nereid_website_obj.browse(website_id)
-            country_id = website.countries[0].id
 
             with app.test_client() as c:
                 result = c.get('/en_US/_available_gateways?value=1&type=address')
@@ -122,32 +117,30 @@ class TestPayment(BaseTestCase):
             self.setup_defaults()
             app = self.get_app()
 
-            website_id, = self.nereid_website_obj.search([])
-            website = self.nereid_website_obj.browse(website_id)
-            country_id = website.countries[0].id
+            website, = self.nereid_website_obj.search([])
+            country = website.countries[0]
 
-            payment_method_id = self.payment_obj.search([])[0]
+            payment_method = self.payment_obj.search([])[0]
             self.payment_obj.write(
-                payment_method_id, {
-                    'available_countries': [('add', [country_id])]
+                [payment_method], {
+                    'available_countries': [('add', [country.id])]
                 }
             )
 
-            self. nereid_website_obj.write(
-                website_id,
-                {'allowed_gateways': [('add', [payment_method_id])]}
+            self.nereid_website_obj.write(
+                [website],
+                {'allowed_gateways': [('add', [payment_method])]}
             )
 
             # Set the country of the address of the registerd user
-            regd_user = self.nereid_user_obj.browse(self.registered_user_id)
-            address_id = regd_user.addresses[0].id
-            self.address_obj.write(address_id, {'country': country_id})
+            address = self.registered_user_id.addresses[0]
+            self.address_obj.write([address], {'country': country.id})
 
             with app.test_client() as c:
                 self.login(c, 'email@example.com', 'password')
                 result = c.get(
                     '/en_US/_available_gateways?'
-                    'value=%s&type=address' % address_id
+                    'value=%d&type=address' % address
                 )
                 json_result = json.loads(result.data)['result']
                 self.assertEqual(len(json_result), 1)
