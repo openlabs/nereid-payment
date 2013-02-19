@@ -79,7 +79,7 @@ class PaymentGateway(ModelSQL, ModelView):
         """
         address_obj = Pool().get('party.address')
 
-        value = int(request.args.get('value', 0))
+        value = request.args.get('value', 0, type=int)
         if request.values.get('type') == 'address':
             # Address lookup only when logged in
             if request.is_guest_user:
