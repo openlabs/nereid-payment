@@ -57,7 +57,7 @@ class PaymentGateway(ModelSQL, ModelView):
         return 100
 
     @classmethod
-    def _get_available_gateways(self, country):
+    def _get_available_gateways(cls, country):
         """Return the list of tuple of available payment methods
         based on the country
 
@@ -70,7 +70,7 @@ class PaymentGateway(ModelSQL, ModelView):
         if request.is_guest_user:
             domain.append(('is_allowed_for_guest', '=', True))
 
-        return self.search(domain)
+        return cls.search(domain)
 
     def get_image(self):
         """Return an image for the given gateway. The API by default looks for
@@ -160,7 +160,8 @@ class DefaultCheckout:
     def __setup__(cls):
         super(DefaultCheckout, cls).__setup__()
 
-    def _process_payment(self, sale, form):
+    @classmethod
+    def _process_payment(cls, sale, form):
         """Process the payment
 
         :param sale: Browse Record of Sale Order
