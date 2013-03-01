@@ -29,7 +29,7 @@ class COD(ModelSQL):
         """
         Sale = Pool().get('sale.sale')
 
-        Sale.write(sale.id, {
+        Sale.write([sale], {
             'invoice_method': cls.invoice_method,
             'shipment_method': cls.shipment_method,
         })
@@ -49,7 +49,7 @@ class Cheque(ModelSQL):
         """
         Sale = Pool().get('sale.sale')
 
-        Sale.write(sale.id, {
+        Sale.write([sale], {
             'invoice_method': cls.invoice_method,
             'shipment_method': cls.shipment_method,
         })
