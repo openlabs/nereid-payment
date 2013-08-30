@@ -9,9 +9,12 @@
 '''
 from trytond.pool import Pool
 
-from .gateway import *
-from .defaults import *
-from .register import *
+from gateway import (
+    PaymentGateway, DefaultCheckout, PaymentGatewayCountry,
+    WebSite, PaymentGatewayWebsite, PaymentGatewaySale,
+)
+from defaults import (COD, Cheque)
+from register import (Register, RegisterLog, Invoice)
 
 
 def register():

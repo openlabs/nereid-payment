@@ -31,8 +31,10 @@ class PaymentGateway(ModelSQL, ModelView):
     available_countries = fields.Many2Many(
         'nereid.payment.gateway-country.country', 'gateway', 'country',
         'Countries Available')
-    model = fields.Many2One('ir.model', "Model", required = True,
-        domain = [('model', 'ilike', 'nereid.payment.%')])
+    model = fields.Many2One(
+        'ir.model', "Model", required=True,
+        domain=[('model', 'ilike', 'nereid.payment.%')]
+    )
     websites = fields.Many2Many('nereid.payment.gateway-nereid.website',
         'gateway', 'website', 'Websites')
     sequence = fields.Integer('Sequence', required=True, select=True)
@@ -113,8 +115,9 @@ class PaymentGateway(ModelSQL, ModelView):
             'id': g.id,
             'name': g.name,
             'image': g.get_image(),
-                } for g in cls._get_available_gateways(value)]
-        return jsonify(result = rv)
+        } for g in cls._get_available_gateways(value)]
+
+        return jsonify(result=rv)
 
     @classmethod
     def process(cls, sale, payment_method_id):
@@ -137,7 +140,7 @@ class PaymentGateway(ModelSQL, ModelView):
             sale.invoice_address.country
         )
         if payment_method not in allowed_gateways:
-            current_app.logger.error("Payment method %s is not valid" % \
+            current_app.logger.error("Payment method %s is not valid" %
                 payment_method.name)
             abort(403)
 
@@ -148,7 +151,6 @@ class PaymentGateway(ModelSQL, ModelView):
             return payment_method_obj.authorize(sale)
         else:
             return payment_method_obj.capture(sale)
-
 
 
 class DefaultCheckout:
@@ -171,16 +173,18 @@ class DefaultCheckout:
         return PaymentGateway.process(sale, form.payment_method.data)
 
 
-
 class PaymentGatewayCountry(ModelSQL):
     "Nereid Payment Country"
     __name__ = 'nereid.payment.gateway-country.country'
 
-    gateway = fields.Many2One('nereid.payment.gateway', 'Gateway' ,
-        ondelete='CASCADE', required=True, select=True)
-    country = fields.Many2One('country.country', 'Country',
-        ondelete='CASCADE', required=True, select=True)
-
+    gateway = fields.Many2One(
+        'nereid.payment.gateway', 'Gateway', ondelete='CASCADE',
+        required=True, select=True
+    )
+    country = fields.Many2One(
+        'country.country', 'Country', ondelete='CASCADE',
+        required=True, select=True
+    )
 
 
 class WebSite:
@@ -194,14 +198,12 @@ class WebSite:
     payment_mode = fields.Selection([
         ('auth_if_available', 'Authorize if available'),
         ('capture', 'Capture'),
-        ], 'Payment Capture mode', required=True
-    )
+    ], 'Payment Capture mode', required=True)
 
     @staticmethod
     def default_payment_mode():
         "Set payment mode to capture by default"
         return 'capture'
-
 
 
 class PaymentGatewayWebsite(ModelSQL):
@@ -214,7 +216,6 @@ class PaymentGatewayWebsite(ModelSQL):
     gateway = fields.Many2One(
         'nereid.payment.gateway', 'Gateway', required=True, select=True
     )
-
 
 
 class PaymentGatewaySale:

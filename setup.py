@@ -96,29 +96,34 @@ minor_version = int(minor_version)
 requires = []
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res|webdav)(\W|$)', dep):
-        requires.append('trytond_%s >= %s.%s, < %s.%s' %
-                (dep, major_version, minor_version, major_version,
-                    minor_version + 1))
-requires.append('trytond >= %s.%s, < %s.%s' %
-        (major_version, minor_version, major_version, minor_version + 1))
+        requires.append(
+            'trytond_%s >= %s.%s, < %s.%s' % (
+                dep, major_version, minor_version, major_version,
+                minor_version + 1,
+            )
+        )
+requires.append(
+    'trytond >= %s.%s, < %s.%s' % (
+        major_version, minor_version, major_version, minor_version + 1
+    )
+)
 
-setup(name='trytond_nereid_payment',
+setup(
+    name='trytond_nereid_payment',
     version=info.get('version', '0.0.1'),
     description=info.get('description', ''),
-    author=info.get('author', ''),
-    author_email=info.get('email', ''),
-    url=info.get('website', ''),
-    download_url="http://downloads.tryton.org/" + \
-            info.get('version', '0.0.1').rsplit('.', 1)[0] + '/',
+    author="Openlabs Technologies and Consulting (P) Ltd.",
+    url="http://openlabs.co.in",
+    download_url="https://github.com/openlabs/nereid-payment",
     package_dir={'trytond.modules.nereid_payment': '.'},
     packages=[
         'trytond.modules.nereid_payment',
         'trytond.modules.nereid_payment.tests',
     ],
     package_data={
-        'trytond.modules.nereid_payment': info.get('xml', []) \
-                + ['tryton.cfg', 'locale/*.po', 'tests/*.rst']
-                + info.get('translation', []),
+        'trytond.modules.nereid_payment': info.get('xml', []) +
+            ['tryton.cfg', 'locale/*.po', 'tests/*.rst'] +
+            info.get('translation', []),
     },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
