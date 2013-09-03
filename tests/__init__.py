@@ -6,4 +6,5 @@
     :copyright: © 2013 by Openlabs Technologies & Consulting (P) Limited
     :license: GPLv3, see LICENSE for more details.
 """
-from .test_payment import suite
+#Flake8: noqa
+from test_payment import suite

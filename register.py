@@ -57,7 +57,6 @@ class Register(ModelSQL, ModelView):
     )
 
 
-
 class RegisterLog(ModelSQL, ModelView):
     "Logs for the paypal notification"
     __name__ = "nereid.payment.register.log"
@@ -68,7 +67,6 @@ class RegisterLog(ModelSQL, ModelView):
         'nereid.payment.register', 'Register', required=True
     )
     message = fields.Text('Message')
-
 
 
 class Invoice:

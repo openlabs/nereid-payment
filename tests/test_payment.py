@@ -30,7 +30,6 @@ class TestPayment(BaseTestCase):
             'localhost/checkout.jinja': '{{form.errors|safe}}',
         })
 
-
     def test_0010_check_cart(self):
         """Assert nothing broke the cart."""
         with Transaction().start(DB_NAME, USER, CONTEXT):
@@ -43,7 +42,7 @@ class TestPayment(BaseTestCase):
 
                 c.post('/en_US/cart/add', data={
                     'product': self.product.id, 'quantity': 5
-                    })
+                })
                 rv = c.get('/en_US/cart')
                 self.assertEqual(rv.status_code, 200)
 
@@ -73,26 +72,28 @@ class TestPayment(BaseTestCase):
 
             website, = self.nereid_website_obj.search([])
             payment_method = self.payment_obj.search([])[0]
-            self.payment_obj.write(
-                [payment_method], {
+            self.payment_obj.write([payment_method], {
                 'available_countries': [('add', map(int, website.countries))]
             })
             country_id = website.countries[0].id
 
             with app.test_client() as c:
-                result = c.get('/en_US/_available_gateways?value=%s' % country_id)
+                result = c.get(
+                    '/en_US/_available_gateways?value=%s' % country_id
+                )
                 # False because its not added to website
                 self.assertFalse(
                     payment_method.id in json.loads(result.data)['result']
                 )
 
-
-            self.nereid_website_obj.write(
-                [website],
-                {'allowed_gateways': [('add', [payment_method])]})
+            self.nereid_website_obj.write([website], {
+                'allowed_gateways': [('add', [payment_method])]
+            })
 
             with app.test_client() as c:
-                result = c.get('/en_US/_available_gateways?value=%s' % country_id)
+                result = c.get(
+                    '/en_US/_available_gateways?value=%s' % country_id
+                )
                 json_result = json.loads(result.data)['result']
                 self.assertEqual(len(json_result), 1)
                 self.assertTrue(
@@ -108,7 +109,9 @@ class TestPayment(BaseTestCase):
             app = self.get_app()
 
             with app.test_client() as c:
-                result = c.get('/en_US/_available_gateways?value=1&type=address')
+                result = c.get(
+                    '/en_US/_available_gateways?value=1&type=address'
+                )
                 self.assertEqual(result.status_code, 403)
 
     def test_0050_address_as_loggedin(self):
