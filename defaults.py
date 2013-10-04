@@ -2,56 +2,55 @@
 """
     Default Payment Methods/Gateways
 
-    COD(Cash on delivery) and Payment by Check/Money Order are 
+    COD(Cash on delivery) and Payment by Check/Money Order are
         default payment methods/gateways
 
-    :copyright: (c) 2010-2012 by Openlabs Technologies & Consulting (P) Ltd.
+    :copyright: (c) 2010-2013 by Openlabs Technologies & Consulting (P) Ltd.
     :license: GPLv3, see LICENSE for more details.
 """
 from trytond.model import ModelSQL
 from trytond.pool import Pool
 
+__all__ = ['COD', 'Cheque']
+
 
 class COD(ModelSQL):
     "Cash on Delivery Payment Gateway"
-    _name = 'nereid.payment.cod'
-    _description = __doc__
+    __name__ = 'nereid.payment.cod'
 
     invoice_method = 'shipment'
     shipment_method = 'order'
 
-    def capture(self, sale):
+    @classmethod
+    def capture(cls, sale):
         """
         In COD payment is done by cash on delivery
         Hence setting invoice method in sale to postpaid
         """
-        order_obj = Pool().get('sale.sale')
-        order_obj.write(sale.id, {
-            'invoice_method': self.invoice_method,
-            'shipment_method': self.shipment_method,
+        Sale = Pool().get('sale.sale')
+
+        Sale.write([sale], {
+            'invoice_method': cls.invoice_method,
+            'shipment_method': cls.shipment_method,
         })
         return True
-
-COD()
 
 
 class Cheque(ModelSQL):
     "Cheque/Money Order Payment Gateway"
-    _name = 'nereid.payment.cheque'
-    _description = __doc__
+    __name__ = 'nereid.payment.cheque'
 
     invoice_method = 'order'
     shipment_method = 'invoice'
 
-    def capture(self, sale):
+    def capture(cls, sale):
         """
         Invoice method in sale to prepaid
         """
-        order_obj = Pool().get('sale.sale')
-        order_obj.write(sale.id, {
-            'invoice_method': self.invoice_method,
-            'shipment_method': self.shipment_method,
+        Sale = Pool().get('sale.sale')
+
+        Sale.write([sale], {
+            'invoice_method': cls.invoice_method,
+            'shipment_method': cls.shipment_method,
         })
         return True
-
-Cheque()

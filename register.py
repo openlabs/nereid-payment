@@ -5,17 +5,20 @@
     A payments register which modules could optionally use to record payment
     details.
 
-    :copyright: © 2011-2012 by Openlabs Technologies & Consulting (P) Limited
+    :copyright: © 2011-2013 by Openlabs Technologies & Consulting (P) Limited
     :license: GPLv3, see LICENSE for more details.
 """
-from trytond.model import Workflow, ModelSQL, ModelView, fields
+from trytond.model import ModelSQL, ModelView, fields
 from trytond.pyson import Equal, Eval, Not
+from trytond.pool import PoolMeta
+
+__all__ = ['Register', 'RegisterLog', 'Invoice']
+__metaclass__ = PoolMeta
 
 
 class Register(ModelSQL, ModelView):
     "Nereid Payemnt Register"
-    _name = "nereid.payment.register"
-    _description = __doc__
+    __name__ = "nereid.payment.register"
 
     _rec_name = 'reference'
 
@@ -54,25 +57,21 @@ class Register(ModelSQL, ModelView):
     )
 
 
-Register()
-
-
 class RegisterLog(ModelSQL, ModelView):
     "Logs for the paypal notification"
-    _name = "nereid.payment.register.log"
-    _description = __doc__
+    __name__ = "nereid.payment.register.log"
+
+    _rec_name = "message"
 
     register = fields.Many2One(
         'nereid.payment.register', 'Register', required=True
     )
     message = fields.Text('Message')
 
-RegisterLog()
 
-
-class Invoice(Workflow, ModelSQL, ModelView):
+class Invoice:
     "Add payment register record to sale"
-    _name = "account.invoice"
+    __name__ = "account.invoice"
 
     nereid_payment_register = fields.Many2One(
         'nereid.payment.register', 'Nereid Payment Record',
@@ -80,5 +79,3 @@ class Invoice(Workflow, ModelSQL, ModelView):
             'readonly': Not(Equal(Eval('state'), 'draft')),
         }
     )
-
-Invoice()
