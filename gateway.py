@@ -8,7 +8,7 @@
     :license: GPLv3, see LICENSE for more details.
 """
 from nereid import abort
-from nereid.helpers import jsonify
+from nereid import jsonify
 from nereid.globals import request, current_app
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import Pool, PoolMeta
