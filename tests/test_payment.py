@@ -23,8 +23,8 @@ class TestPayment(BaseTestCase):
         super(TestPayment, self).setUp()
         trytond.tests.test_tryton.install_module('nereid_payment')
 
-        self.address_obj = POOL.get('party.address')
-        self.payment_obj = POOL.get('nereid.payment.gateway')
+        self.Address = POOL.get('party.address')
+        self.Payment = POOL.get('nereid.payment.gateway')
 
         self.templates.update({
             'localhost/checkout.jinja': '{{form.errors|safe}}',
@@ -37,18 +37,18 @@ class TestPayment(BaseTestCase):
             app = self.get_app()
 
             with app.test_client() as c:
-                rv = c.get('/en_US/cart')
+                rv = c.get('/cart')
                 self.assertEqual(rv.status_code, 200)
 
-                c.post('/en_US/cart/add', data={
-                    'product': self.product.id, 'quantity': 5
+                c.post('/cart/add', data={
+                    'product': self.product1.id, 'quantity': 5
                 })
-                rv = c.get('/en_US/cart')
+                rv = c.get('/cart')
                 self.assertEqual(rv.status_code, 200)
 
-            sale, = self.sale_obj.search([])
+            sale, = self.Sale.search([])
             self.assertEqual(len(sale.lines), 1)
-            self.assertEqual(sale.lines[0].product, self.product)
+            self.assertEqual(sale.lines[0].product, self.product1)
 
     def test_0020_find_gateways(self):
         """
@@ -59,7 +59,7 @@ class TestPayment(BaseTestCase):
             app = self.get_app()
 
             with app.test_client() as c:
-                rv = c.get('/en_US/_available_gateways?value=777666554')
+                rv = c.get('/_available_gateways?value=777666554')
                 self.assertEqual(json.loads(rv.data), {u'result': []})
 
     def test_0030_find_after_adding_country(self):
@@ -70,29 +70,29 @@ class TestPayment(BaseTestCase):
             self.setup_defaults()
             app = self.get_app()
 
-            website, = self.nereid_website_obj.search([])
-            payment_method = self.payment_obj.search([])[0]
-            self.payment_obj.write([payment_method], {
+            website, = self.NereidWebsite.search([])
+            payment_method = self.Payment.search([])[0]
+            self.Payment.write([payment_method], {
                 'available_countries': [('add', map(int, website.countries))]
             })
             country_id = website.countries[0].id
 
             with app.test_client() as c:
                 result = c.get(
-                    '/en_US/_available_gateways?value=%s' % country_id
+                    '/_available_gateways?value=%s' % country_id
                 )
                 # False because its not added to website
                 self.assertFalse(
                     payment_method.id in json.loads(result.data)['result']
                 )
 
-            self.nereid_website_obj.write([website], {
+            self.NereidWebsite.write([website], {
                 'allowed_gateways': [('add', [payment_method])]
             })
 
             with app.test_client() as c:
                 result = c.get(
-                    '/en_US/_available_gateways?value=%s' % country_id
+                    '/_available_gateways?value=%s' % country_id
                 )
                 json_result = json.loads(result.data)['result']
                 self.assertEqual(len(json_result), 1)
@@ -110,7 +110,7 @@ class TestPayment(BaseTestCase):
 
             with app.test_client() as c:
                 result = c.get(
-                    '/en_US/_available_gateways?value=1&type=address'
+                    '/_available_gateways?value=1&type=address'
                 )
                 self.assertEqual(result.status_code, 403)
 
@@ -120,29 +120,29 @@ class TestPayment(BaseTestCase):
             self.setup_defaults()
             app = self.get_app()
 
-            website, = self.nereid_website_obj.search([])
+            website, = self.NereidWebsite.search([])
             country = website.countries[0]
 
-            payment_method = self.payment_obj.search([])[0]
-            self.payment_obj.write(
+            payment_method = self.Payment.search([])[0]
+            self.Payment.write(
                 [payment_method], {
                     'available_countries': [('add', [country.id])]
                 }
             )
 
-            self.nereid_website_obj.write(
+            self.NereidWebsite.write(
                 [website],
                 {'allowed_gateways': [('add', [payment_method])]}
             )
 
             # Set the country of the address of the registerd user
-            address = self.registered_user_id.addresses[0]
-            self.address_obj.write([address], {'country': country.id})
+            address = self.registered_user.party.addresses[0]
+            self.Address.write([address], {'country': country.id})
 
             with app.test_client() as c:
                 self.login(c, 'email@example.com', 'password')
                 result = c.get(
-                    '/en_US/_available_gateways?'
+                    '/_available_gateways?'
                     'value=%d&type=address' % address
                 )
                 json_result = json.loads(result.data)['result']
