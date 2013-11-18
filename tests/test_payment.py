@@ -37,13 +37,13 @@ class TestPayment(BaseTestCase):
             app = self.get_app()
 
             with app.test_client() as c:
-                rv = c.get('/en_US/cart')
+                rv = c.get('/cart')
                 self.assertEqual(rv.status_code, 200)
 
-                c.post('/en_US/cart/add', data={
+                c.post('/cart/add', data={
                     'product': self.product1.id, 'quantity': 5
                 })
-                rv = c.get('/en_US/cart')
+                rv = c.get('/cart')
                 self.assertEqual(rv.status_code, 200)
 
             sale, = self.Sale.search([])
@@ -59,7 +59,7 @@ class TestPayment(BaseTestCase):
             app = self.get_app()
 
             with app.test_client() as c:
-                rv = c.get('/en_US/_available_gateways?value=777666554')
+                rv = c.get('/_available_gateways?value=777666554')
                 self.assertEqual(json.loads(rv.data), {u'result': []})
 
     def test_0030_find_after_adding_country(self):
@@ -79,7 +79,7 @@ class TestPayment(BaseTestCase):
 
             with app.test_client() as c:
                 result = c.get(
-                    '/en_US/_available_gateways?value=%s' % country_id
+                    '/_available_gateways?value=%s' % country_id
                 )
                 # False because its not added to website
                 self.assertFalse(
@@ -92,7 +92,7 @@ class TestPayment(BaseTestCase):
 
             with app.test_client() as c:
                 result = c.get(
-                    '/en_US/_available_gateways?value=%s' % country_id
+                    '/_available_gateways?value=%s' % country_id
                 )
                 json_result = json.loads(result.data)['result']
                 self.assertEqual(len(json_result), 1)
@@ -110,7 +110,7 @@ class TestPayment(BaseTestCase):
 
             with app.test_client() as c:
                 result = c.get(
-                    '/en_US/_available_gateways?value=1&type=address'
+                    '/_available_gateways?value=1&type=address'
                 )
                 self.assertEqual(result.status_code, 403)
 
@@ -142,7 +142,7 @@ class TestPayment(BaseTestCase):
             with app.test_client() as c:
                 self.login(c, 'email@example.com', 'password')
                 result = c.get(
-                    '/en_US/_available_gateways?'
+                    '/_available_gateways?'
                     'value=%d&type=address' % address
                 )
                 json_result = json.loads(result.data)['result']
