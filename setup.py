@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-#This file is part of Tryton.  The COPYRIGHT file at the top level of
-#this repository contains the full copyright notices and license terms.
+# This file is part of Tryton.  The COPYRIGHT file at the top level of
+# this repository contains the full copyright notices and license terms.
 from setuptools import setup, Command
 import re
 import os
@@ -93,7 +93,9 @@ major_version, minor_version, _ = info.get('version', '0.0.1').split('.', 2)
 major_version = int(major_version)
 minor_version = int(minor_version)
 
-requires = []
+requires = [
+        'trytond_nereid>=3.0.7.0,<3.1',
+]
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res|webdav)(\W|$)', dep):
         requires.append(
@@ -122,8 +124,8 @@ setup(
     ],
     package_data={
         'trytond.modules.nereid_payment': info.get('xml', []) +
-            ['tryton.cfg', 'locale/*.po', 'tests/*.rst'] +
-            info.get('translation', []),
+        ['tryton.cfg', 'locale/*.po', 'tests/*.rst'] +
+        info.get('translation', []),
     },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
