@@ -7,7 +7,7 @@
     :copyright: (c) 2011-2013 by Openlabs Technologies & Consulting (P) Limited
     :license: GPLv3, see LICENSE for more details.
 """
-from nereid import abort
+from nereid import abort, route
 from nereid import jsonify
 from nereid.globals import request, current_app
 from trytond.model import ModelView, ModelSQL, fields
@@ -87,6 +87,7 @@ class PaymentGateway(ModelSQL, ModelView):
         return None
 
     @classmethod
+    @route('/_available_gateways')
     def get_available_gateways(cls):
         """Return the JSONified list of payment gateways available
 
