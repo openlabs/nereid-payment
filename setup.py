@@ -113,7 +113,8 @@ requires.append(
 setup(
     name='trytond_nereid_payment',
     version=info.get('version', '0.0.1'),
-    description=info.get('description', ''),
+    description='Nereid payment gateway (Deprecated)',
+    long_description=read('README.rst'),
     author="Openlabs Technologies and Consulting (P) Ltd.",
     url="http://openlabs.co.in",
     download_url="https://github.com/openlabs/nereid-payment",
